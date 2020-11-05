@@ -1,0 +1,4 @@
+include ':airhockey2'
+include ':airhockeyactivity'
+include ':app'
+rootProject.name = "FirstOpenGLProjectActivity"
