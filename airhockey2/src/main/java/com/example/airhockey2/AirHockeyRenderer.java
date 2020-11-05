@@ -45,26 +45,32 @@ public class AirHockeyRenderer implements GLSurfaceView.Renderer {
     private static final String A_POSITION = "a_Position";
     private int aPositionLocation;
 
+    private static final String A_COLOR = "a_Color";
+    private static final int COLOR_COMPONENT_COUNT = 3;
+    // STRIDE 跨距以 字节 为单位
+    private static final int STRIDE = (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * BYTES_PER_FLOAT;
+    private int aColorLocation;
+
     public AirHockeyRenderer(Context context) {
         this.context = context;
 
         float[] tableVerticesWithTriangles = {
                 // Triangle Fan
                 // 依次取2个点 和 第一个点 组合成三角形！
-                0.0f, 0.0f, 1f, 1f, 1f
-                - 0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
-                0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
-                0.5f, 0.5f, 0.7f, 0.7f, 0.7f,
-                -0.5f, 0.5f, 0.7f, 0.7f, 0.7f,
-                -0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
+                0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+                -0.5f, -0.5f, 1.0f, 0.7f, 0.7f,
+                0.5f, -0.5f, 0.7f, 1.0f, 0.7f,
+                0.5f, 0.5f, 0.7f, 0.7f, 1.0f,
+                -0.5f, 0.5f, 0.3f, 0.3f, 0.0f,
+                -0.5f, -0.5f, 1.0f, 0.7f, 0.7f,
 
                 // Line 1
-                -0.5f, 0f, 1f, 0f, 0f,
-                0.5f, 0f, 1f, 0f, 0f,
+                -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+                0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
 
                 // Mallets
-                0f, -0.25f, 0f, 0f, 1f,
-                0f, 0.25f, 1f, 0f, 0f,
+                0.0f, -0.25f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.25f, 1.0f, 0.0f, 0.0f,
 
 //                // 边框 Line left
 //                -0.51f, 0.51f,
@@ -115,12 +121,18 @@ public class AirHockeyRenderer implements GLSurfaceView.Renderer {
 
         glUseProgram(program);
 
-        uColorLocation = glGetUniformLocation(program, U_COLOR);
+//        uColorLocation = glGetUniformLocation(program, U_COLOR);
+        aColorLocation = glGetAttribLocation(program, A_COLOR);
         aPositionLocation = glGetAttribLocation(program, A_POSITION);
 
         vertexData.position(0);
-        glVertexAttribPointer(aPositionLocation, POSITION_COMPONENT_COUNT, GL_FLOAT, false, 0, vertexData);
+        glVertexAttribPointer(aPositionLocation, POSITION_COMPONENT_COUNT, GL_FLOAT, false, STRIDE, vertexData);
         glEnableVertexAttribArray(aPositionLocation);
+
+        vertexData.position(POSITION_COMPONENT_COUNT);
+        // STRIDE 因为 颜色属性 和 位置属性 都在一个float数组里面，所以顶点需要跳跃一段距离
+        glVertexAttribPointer(aColorLocation, COLOR_COMPONENT_COUNT, GL_FLOAT, false, STRIDE, vertexData);
+        glEnableVertexAttribArray(aColorLocation);
     }
 
     @Override
@@ -132,19 +144,14 @@ public class AirHockeyRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 gl) {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUniform4f(uColorLocation, 1.0f, 1.0f, 1.0f, 1.0f);
         // 三角形 count = 3个顶点 2个三角形 一共 6个顶点
         glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
 
-        glUniform4f(uColorLocation, 1.0f, 0.0f, 0.0f, 1.0f);
         // 线 count = 2个顶点
         glDrawArrays(GL_LINES, 6, 2);
 
-        glUniform4f(uColorLocation, 0.0f, 0.0f, 1.0f, 1.0f);
         // 点 count = 1个顶点
         glDrawArrays(GL_POINTS, 8, 1);
-
-        glUniform4f(uColorLocation, 1.0f, 0.0f, 0.0f, 1.0f);
         glDrawArrays(GL_POINTS, 9, 1);
 
 //        glUniform4f(uColorLocation, 1.0f, 0.0f, 0.0f, 1.0f);
