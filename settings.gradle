@@ -1,3 +1,4 @@
+include ':airhockey6'
 include ':airhockey5'
 include ':airhockey2'
 include ':airhockeyactivity'
