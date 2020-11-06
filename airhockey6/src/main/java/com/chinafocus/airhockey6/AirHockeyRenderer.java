@@ -32,7 +32,7 @@ import static android.opengl.GLES20.glVertexAttribPointer;
 import static android.opengl.GLES20.glViewport;
 
 public class AirHockeyRenderer implements GLSurfaceView.Renderer {
-    private static final int POSITION_COMPONENT_COUNT = 2;
+    private static final int POSITION_COMPONENT_COUNT = 4;
     private static final int BYTES_PER_FLOAT = 4;
     private final FloatBuffer vertexData;
     private final Context context;
@@ -54,26 +54,28 @@ public class AirHockeyRenderer implements GLSurfaceView.Renderer {
     private final float[] projectionMatrix = new float[16];
     private int uMatrixLocation;
 
+    private final float[] modelMatrix = new float[16];
+
     public AirHockeyRenderer(Context context) {
         this.context = context;
 
         float[] tableVerticesWithTriangles = {
                 // Triangle Fan
                 // 依次取2个点 和 第一个点 组合成三角形！
-                0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-                -0.5f, -0.8f, 1.0f, 0.7f, 0.7f,
-                0.5f, -0.8f, 0.7f, 1.0f, 0.7f,
-                0.5f, 0.8f, 0.7f, 0.7f, 1.0f,
-                -0.5f, 0.8f, 0.3f, 0.3f, 0.0f,
-                -0.5f, -0.8f, 1.0f, 0.7f, 0.7f,
+                0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+                -0.5f, -0.8f, 0.0f, 1.0f, 1.0f, 0.7f, 0.7f,
+                0.5f, -0.8f, 0.0f, 1.0f, 0.7f, 1.0f, 0.7f,
+                0.5f, 0.8f, 0.0f, 1.0f, 0.7f, 0.7f, 1.0f,
+                -0.5f, 0.8f, 0.0f, 1.0f, 0.3f, 0.3f, 0.0f,
+                -0.5f, -0.8f, 0.0f, 1.0f, 1.0f, 0.7f, 0.7f,
 
                 // Line 1
-                -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+                -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+                0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
 
                 // Mallets
-                0.0f, -0.4f, 0.0f, 0.0f, 1.0f,
-                0.0f, 0.4f, 1.0f, 0.0f, 0.0f,
+                0.0f, -0.4f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                0.0f, 0.4f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
 
 //                // 边框 Line left
 //                -0.51f, 0.51f,
@@ -144,18 +146,18 @@ public class AirHockeyRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         glViewport(0, 0, width, height);
 
-        final float aspectRatio = width > height ?
-                (float) width / (float) height :
-                (float) height / (float) width;
+        Matrix.setIdentityM(modelMatrix, 0);
+        // 让顶点的z值，从0，平移到透视矩阵里面
+        Matrix.translateM(modelMatrix, 0, 0, 0, -2.0f);
+        // x方向 旋转 -60° 右手定理
+        Matrix.rotateM(modelMatrix, 0, -60f, 1f, 0f, 0f);
 
-        if (width > height) {
-            // Landscape
-            Matrix.orthoM(projectionMatrix, 0, -aspectRatio, aspectRatio, -1f, 1f, -1f, 1f);
-        } else {
-            // Portrait
-            Matrix.orthoM(projectionMatrix, 0, -1f, 1f, -aspectRatio, aspectRatio, -1f, 1f);
-        }
-//        Matrix.orthoM(projectionMatrix, 0, -1f, 1f, -2f, 2f, -1f, 1f);
+        final float[] temp = new float[16];
+        // 透视矩阵的区域为 -1 到 -10
+        Matrix.perspectiveM(projectionMatrix, 0, 90, (float) width / (float) height, 1.0f, 10.0f);
+        Matrix.multiplyMM(temp, 0, projectionMatrix, 0, modelMatrix, 0);
+        System.arraycopy(temp, 0, projectionMatrix, 0, temp.length);
+
     }
 
     @Override
