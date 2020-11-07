@@ -50,21 +50,28 @@ public class AirHockeyRenderer implements GLSurfaceView.Renderer {
                 0f, -0.25f,
                 0f, 0.25f,
 
-                // 边框 Line left
+//                // 边框 Line left
+//                -0.51f, 0.51f,
+//                -0.51f, -0.51f,
+//
+//                // 边框 Line 下
+//                -0.51f, -0.51f,
+//                0.51f, -0.51f,
+//
+//                // 边框 Line 右
+//                0.51f, -0.51f,
+//                0.51f, 0.51f,
+//
+//                // 边框 Line 上
+//                0.51f, 0.51f,
+//                -0.51f, 0.51f,
+
+                // 边框 Lines Loop
+                // 只需要4个点。循环取，就是4个边框
                 -0.51f, 0.51f,
                 -0.51f, -0.51f,
-
-                // 边框 Line 下
-                -0.51f, -0.51f,
-                0.51f, -0.51f,
-
-                // 边框 Line 右
                 0.51f, -0.51f,
                 0.51f, 0.51f,
-
-                // 边框 Line 上
-                0.51f, 0.51f,
-                -0.51f, 0.51f,
 
                 // 冰球
                 0.0f, 0.0f
@@ -133,10 +140,10 @@ public class AirHockeyRenderer implements GLSurfaceView.Renderer {
 
         glUniform4f(uColorLocation, 1.0f, 0.0f, 0.0f, 1.0f);
         // 线 count = 2个顶点 4个线 一共 2*4 = 8个顶点
-        glDrawArrays(GL_LINES, 10, 8);
+        glDrawArrays(GL_LINE_LOOP, 10, 4);
 
         glUniform4f(uColorLocation, 0.0f, 1.0f, 1.0f, 1.0f);
-        glDrawArrays(GL_POINTS, 18, 1);
+        glDrawArrays(GL_POINTS, 14, 1);
 
     }
 }
