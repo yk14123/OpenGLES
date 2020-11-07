@@ -1,3 +1,4 @@
+include ':airhockey8'
 include ':airhockey7'
 include ':airhockey6'
 include ':airhockey5'
