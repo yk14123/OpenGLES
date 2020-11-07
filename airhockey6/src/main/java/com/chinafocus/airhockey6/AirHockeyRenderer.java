@@ -75,7 +75,7 @@ public class AirHockeyRenderer implements GLSurfaceView.Renderer {
 
                 // Mallets
                 0.0f, -0.4f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-                0.0f, 0.4f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+                0.0f, 0.4f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f
 
 //                // 边框 Line left
 //                -0.51f, 0.51f,
