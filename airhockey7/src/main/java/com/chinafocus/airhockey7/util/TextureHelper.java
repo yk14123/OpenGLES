@@ -14,6 +14,7 @@ public class TextureHelper {
     public static int loadTexture(Context context, int resourceId) {
 
         final int[] textureObjectIds = new int[1];
+        // 创建一个纹理空间
         glGenTextures(1, textureObjectIds, 0);
 
         if (textureObjectIds[0] == 0) {
@@ -35,19 +36,20 @@ public class TextureHelper {
             glDeleteTextures(1, textureObjectIds, 0);
             return 0;
         }
-        // 告诉OPENGL 应该使用这个纹理对象
+        // 把刚刚创建好的2D纹理空间，告诉openGL 目前纹理空间还没有内容
         glBindTexture(GL_TEXTURE_2D, textureObjectIds[0]);
         // 设置缩小过滤器
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         // 设置放大过滤器
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        // 把bitmap传给openGL
+        // 加载纹理到openGL中
         GLUtils.texImage2D(GL_TEXTURE_2D, 0, bitmap, 0);
         // 可以释放java中的bitmap
         bitmap.recycle();
         // 生成mipmap图
         glGenerateMipmap(GL_TEXTURE_2D);
-        // 解除绑定
+        // 既然已经完成了纹理的加载，我们就解除绑定，防止用其他纹理方法意外改变这个纹理
+        // 感觉 GL_TEXTURE_2D 像一个C中的指针一样，指向一个区域，给区域赋值，赋值完后，把指针移到空区域
         glBindTexture(GL_TEXTURE_2D, 0);
 
         return textureObjectIds[0];
